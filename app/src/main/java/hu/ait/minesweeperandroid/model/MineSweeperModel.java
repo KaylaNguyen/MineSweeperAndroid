@@ -1,8 +1,5 @@
 package hu.ait.minesweeperandroid.model;
 
-
-import android.util.Log;
-
 import java.util.Random;
 
 /**
@@ -12,8 +9,8 @@ import java.util.Random;
 public class MineSweeperModel {
 
     private static MineSweeperModel instance = null;
-    private int rowNum = 5;
-    private int colNum = 5;
+    public final int rowNum = 5;
+    public final int colNum = 6;
     private int bombNum = 3;
 
     private Field[][] model;
@@ -25,19 +22,8 @@ public class MineSweeperModel {
                 model[i][j] = new Field();
             }
         }
-
         placeBomb();
         computeFieldContent();
-
-
-        // DEBUGGING
-        for (int i = 0; i < rowNum; i++) {
-            String out = "";
-            for (int j = 0; j < colNum; j++) {
-                out += model[i][j].getNumAdjMines() + " ";
-            }
-            Log.d("BOARD", out);
-        }
     }
 
     public static MineSweeperModel getInstance() {
@@ -106,19 +92,6 @@ public class MineSweeperModel {
             revealFieldRecursive(x, y);
         }
         model[x][y].reveal();
-
-
-        // DEBUGGING
-//        for (int i = 0; i < rowNum; i++) {
-//            String out = "";
-//            for (int j = 0; j < colNum; j++) {
-//                if (model[i][j].isRevealed())
-//                    out += "X" + " ";
-//                else
-//                    out += "O" + " ";
-//            }
-//            Log.d("BOARD", out);
-//        }
     }
 
     private void revealFieldRecursive(int x, int y) {

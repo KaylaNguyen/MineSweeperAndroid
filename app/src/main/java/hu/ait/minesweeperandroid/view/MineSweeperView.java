@@ -21,26 +21,22 @@ public class MineSweeperView extends View {
     private Paint paintBg;
     private Paint paintLine;
     private Paint paintText;
+    private Paint paintRect;
 
     private Bitmap bitmapBg;
+    private Bitmap flagIcon;
+    private Bitmap bombIcon;
 
     private short winner;
 
-    private final int rowNum = 5;
-    private final int colNum = 5;
-
-    private int fieldSize;
+    private int rowNum;
+    private int colNum;
 
     public MineSweeperView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        // TODO: background pic
-        // TODO: smily icon change when lose/win
-        // TODO: change field color
-        // TODO: icon for mines and flag
-
         paintBg = new Paint();
-        paintBg.setColor(Color.BLACK);
+        paintBg.setColor(Color.DKGRAY);
         paintBg.setStyle(Paint.Style.FILL);
 
         paintLine = new Paint();
@@ -48,12 +44,19 @@ public class MineSweeperView extends View {
         paintLine.setStyle(Paint.Style.STROKE);
         paintLine.setStrokeWidth(5);
 
+        paintRect = new Paint();
+        paintRect.setColor(Color.parseColor("#FF7F50"));
+        paintRect.setStyle(Paint.Style.FILL);
+
         paintText = new Paint();
         paintText.setColor(Color.RED);
 
-        bitmapBg = BitmapFactory.decodeResource(getResources(), R.drawable.sky_background);
+        bitmapBg = BitmapFactory.decodeResource(getResources(), R.drawable.theme);
+        flagIcon = BitmapFactory.decodeResource(getResources(), R.drawable.flag);
+        bombIcon = BitmapFactory.decodeResource(getResources(), R.drawable.bomb);
 
-        fieldSize = (getHeight() * getWidth()) / (rowNum * colNum);
+        rowNum = MineSweeperModel.getInstance().rowNum;
+        colNum = MineSweeperModel.getInstance().colNum;
     }
 
     @Override
@@ -61,7 +64,6 @@ public class MineSweeperView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
 
         bitmapBg = Bitmap.createScaledBitmap(bitmapBg, getWidth(), getHeight(), false);
-        // TODO: dynamic text size
         paintText.setTextSize(getHeight() / rowNum / 2);
     }
 
@@ -79,29 +81,37 @@ public class MineSweeperView extends View {
     }
 
     private void drawFields(Canvas canvas) {
+        int fieldWidth = getWidth() / colNum;
+        int fieldHeight = getHeight() / rowNum;
         for (int i = 0; i < rowNum; i++) {
             for (int j = 0; j < colNum; j++) {
                 float centerX = j * getHeight() / colNum + getHeight() / (colNum * 3);
                 float centerY = i * getWidth() / rowNum + getWidth() / (rowNum * 2);
+
                 if (MineSweeperModel.getInstance().getFieldContent(i, j).isMine() &&
                         MineSweeperModel.getInstance().getFieldContent(i, j).isRevealed()) {
-                    canvas.drawText("X",
-                            centerX,
-                            centerY,
-                            paintText);
-                } else if (MineSweeperModel.getInstance().getFieldContent(i, j).isRevealed()) {
-                    canvas.drawText(
-                            String.valueOf(MineSweeperModel.getInstance().getFieldContent(i, j).getNumAdjMines()),
-                            centerX,
-                            centerY,
-                            paintText);
+                    canvas.drawRect(fieldWidth * j, fieldHeight * i, fieldWidth * (j + 1), fieldHeight * (i + 1), paintRect);
+
+                    float left = j * getHeight() / colNum + getHeight() / (colNum*6);
+                    float top = i * getWidth() / rowNum + getWidth() / (rowNum*6);
+                    canvas.drawBitmap(bombIcon, left, top, null);
                 }
+
+                else if (MineSweeperModel.getInstance().getFieldContent(i, j).isRevealed()) {
+                    canvas.drawRect(fieldWidth * j, fieldHeight * i, fieldWidth * (j + 1), fieldHeight * (i + 1), paintRect);
+
+                    int numAdjMines = MineSweeperModel.getInstance().getFieldContent(i, j).getNumAdjMines();
+                    if (numAdjMines != 0) {
+                        canvas.drawText(String.valueOf(numAdjMines), centerX, centerY, paintText);
+                    }
+                }
+
                 else if (MineSweeperModel.getInstance().getFieldContent(i, j).isFlagged()) {
-                    canvas.drawText(
-                            "F",
-                            centerX,
-                            centerY,
-                            paintText);
+                    canvas.drawRect(fieldWidth * j, fieldHeight * i, fieldWidth * (j + 1), fieldHeight * (i + 1), paintRect);
+
+                    float left = j * getHeight() / colNum + getHeight() / (colNum*6);
+                    float top = i * getWidth() / rowNum + getWidth() / (rowNum*6);
+                    canvas.drawBitmap(flagIcon, left, top, null);
                 }
             }
         }
@@ -123,12 +133,13 @@ public class MineSweeperView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         if (winner != 0) {
             if (winner == -1) {
-                ((MainActivity) getContext()).setPlayerText("You lost!");
                 Snackbar.make(this, "You lost!", Snackbar.LENGTH_INDEFINITE).show();
+                ((MainActivity) getContext()).getBtnClear().setBackgroundResource(R.drawable.sad);
             } else {
-                ((MainActivity) getContext()).setPlayerText("You won!");
                 Snackbar.make(this, "You won!", Snackbar.LENGTH_INDEFINITE).show();
+                ((MainActivity) getContext()).getBtnClear().setBackgroundResource(R.drawable.cool);
             }
+            ((MainActivity) getContext()).setPlayerText("Click face to play again!");
             ((MainActivity) getContext()).getTimePlayer().stop();
             return true;
         }
@@ -150,8 +161,6 @@ public class MineSweeperView extends View {
             }
             winner = MineSweeperModel.getInstance().checkResult();
         }
-//                Log.d("DEBUG", "winner is " + String.valueOf(winner));
-
         return true;
     }
 
@@ -166,12 +175,13 @@ public class MineSweeperView extends View {
     public void resetGame() {
         MineSweeperModel.getInstance().resetModel();
         ((MainActivity) getContext()).setPlayerText("Touch the game area to play");
-
-        winner = 0;
+        ((MainActivity) getContext()).getBtnClear().setBackgroundResource(R.drawable.smile);
+        this.winner = 0;
 
         ((MainActivity) getContext()).getTimePlayer().stop();
         ((MainActivity) getContext()).getTimePlayer().setBase(SystemClock.elapsedRealtime());
         invalidate();
-        ((MainActivity) getContext()).getTimePlayer().stop();
+        ((MainActivity) getContext()).getTimePlayer().start();
+        Snackbar.make(this, "Good luck!", Snackbar.LENGTH_SHORT).show();
     }
 }

@@ -21,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean flagMode;
 
+    private Button btnClear;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
         final MineSweeperView gameView = (MineSweeperView) findViewById(R.id.gameView);
 
-        Button btnClear = (Button) findViewById(R.id.btnClear);
+        btnClear = (Button) findViewById(R.id.btnClear);
+        btnClear.setBackgroundResource(R.drawable.smile);
         btnClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,6 +65,10 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean getFlagMode(){
         return this.flagMode;
+    }
+
+    public Button getBtnClear() {
+        return this.btnClear;
     }
 }
 

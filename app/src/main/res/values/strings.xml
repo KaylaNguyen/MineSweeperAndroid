@@ -1,4 +1,8 @@
 <resources>
-    <string name="app_name">MineSweeperAndroid</string>
+    <string name="app_name">Mine Sweeper</string>
     <string name="reset">Reset</string>
+    <string name="try_mode">Try mode</string>
+    <string name="flag_mode">Flag mode</string>
+    <string name="time">Time</string>
+    <string name="touch_the_game_area_to_play">Touch the game area to play</string>
 </resources>

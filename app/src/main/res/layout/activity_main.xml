@@ -4,7 +4,7 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#91f5f0"
+    android:background="#FFA07A"
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -12,37 +12,43 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="hu.ait.minesweeperandroid.MainActivity">
 
-    <Button
-        android:id="@+id/btnClear"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/reset" />
+        android:baselineAligned="true">
+
+
+        <Chronometer
+            android:id="@+id/player_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:layout_alignParentEnd="true"/>
+
+        <TextView
+            android:id="@+id/timer_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/time"
+            android:layout_toStartOf="@+id/player_time"/>
+
+        <Button
+            android:id="@+id/btnClear"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_centerHorizontal="true"/>
+    </RelativeLayout>
 
     <ToggleButton
         android:id="@+id/togglebutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onToggleClicked"
-        android:textOff="Try mode"
-        android:textOn="Flag mode" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:baselineAligned="true">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Time" />
-
-        <Chronometer
-            android:id="@+id/player_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="20dp" />
-    </LinearLayout>
+        android:textOff="@string/try_mode"
+        android:textOn="@string/flag_mode"
+        android:layout_gravity="center"/>
 
     <hu.ait.minesweeperandroid.view.MineSweeperView
         android:id="@+id/gameView"
@@ -58,7 +64,7 @@
             android:id="@+id/tvPlayer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Touch the game area to play"
+            android:text="@string/touch_the_game_area_to_play"
             android:textSize="22sp" />
     </com.facebook.shimmer.ShimmerFrameLayout>
 
